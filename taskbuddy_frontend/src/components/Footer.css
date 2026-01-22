@@ -1,0 +1,23 @@
+.footer {
+  background: #111827;
+}
+
+.footer-links li {
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.footer-links li:hover {
+  color: #0d6efd;
+}
+
+.footer-icon {
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.footer-icon:hover {
+  color: #0d6efd;
+}
