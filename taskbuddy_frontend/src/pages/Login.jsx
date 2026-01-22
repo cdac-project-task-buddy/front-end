@@ -1,11 +1,49 @@
 import "./Login.css";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const email = e.target.email.value;
+
+    // Dummy role logic (later replace with backend)
+    let role = "customer";
+
+    if (email === "admin@taskbuddy.com") {
+      role = "admin";
+    } else if (email.endsWith("@provider.com")) {
+      role = "provider";
+    } else {
+      role = "customer";
+    }
+
+    toast.success("Login successful!", {
+      position: "top-center",
+      autoClose: 1500,
+    });
+
+    setTimeout(() => {
+      if (role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (role === "provider") {
+        navigate("/provider-dashboard");
+      } else {
+        navigate("/customer-dashboard");
+      }
+    }, 1500);
+  };
+
   return (
     <div className="login-page d-flex align-items-center justify-content-center">
       <div className="login-card shadow">
 
-        {/* Logo */}
+        <ToastContainer />
+
         <div className="text-center mb-3">
           <h4 className="fw-bold text-primary">TaskBuddy</h4>
         </div>
@@ -15,13 +53,15 @@ export default function Login() {
           Log in to manage your bookings and requests.
         </p>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label small">Email</label>
             <input 
+              name="email"
               type="email" 
               className="form-control" 
               placeholder="john.doe@example.com" 
+              required
             />
           </div>
 
@@ -31,42 +71,23 @@ export default function Login() {
               type="password" 
               className="form-control" 
               placeholder="••••••••" 
+              required
             />
-          </div>
-
-          <div className="d-flex justify-content-between align-items-center mb-3 small">
-            <div>
-              <input type="checkbox" className="form-check-input me-1" />
-              Remember me
-            </div>
-            <a href="#" className="text-primary text-decoration-none">
-              Forgot password?
-            </a>
           </div>
 
           <button className="btn btn-primary w-100 mb-3">
             Login
           </button>
 
-          <div className="text-center text-muted small mb-3">
-            OR
-          </div>
-
-          <div className="d-flex gap-2 mb-3">
-            <button type="button" className="btn btn-outline-dark w-100">
-              <i className="bi bi-google me-1"></i> Google
-            </button>
-            <button type="button" className="btn btn-outline-dark w-100">
-              <i className="bi bi-github me-1"></i> GitHub
-            </button>
-          </div>
-
           <p className="text-center small">
-            Don't have an account? <a href="#" className="text-primary">Register</a>
-          </p>
-
-          <p className="text-center text-muted small mt-3">
-            We use secure authentication.
+            Don't have an account?{" "}
+            <span 
+              className="text-primary"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/register")}
+            >
+              Register
+            </span>
           </p>
         </form>
       </div>

@@ -7,6 +7,10 @@ import HowItWorks from "./components/HowItWorks";
 import Trust from "./components/Trust";
 import Footer from "./components/Footer";
 
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProviderOnboarding from "./pages/ProviderOnboarding";
 import CustomerDashboard from "./pages/CustomerDashboard";
 
 function App() {
@@ -31,10 +35,17 @@ function App() {
             />
 
             {/* Customer Dashboard */}
+                <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/provider-onboarding" element={<ProviderOnboarding />} />
+
             <Route
               path="/dashboard"
               element={<CustomerDashboard />}
             />
+
+
           </Routes>
         </main>
 
