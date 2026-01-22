@@ -8,6 +8,7 @@ import Trust from "./components/Trust";
 import Footer from "./components/Footer";
 
 import CustomerDashboard from "./pages/CustomerDashboard";
+import ServiceProviders from "./pages/ServiceProviders";
 
 function App() {
   return (
@@ -35,6 +36,9 @@ function App() {
               path="/dashboard"
               element={<CustomerDashboard />}
             />
+
+            <Route path="/providers/:serviceName" element={<ServiceProviders />} />
+
           </Routes>
         </main>
 

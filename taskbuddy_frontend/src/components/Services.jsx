@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import "./Services.css";
 
 const services = [
@@ -12,6 +13,12 @@ const services = [
 ];
 
 export default function Services() {
+  const navigate = useNavigate();
+
+  const handleServiceClick = (serviceName) => {
+    navigate(`/providers/${serviceName.toLowerCase().replace(/\s+/g, "-")}`);
+  };
+
   return (
     <section className="py-5 bg-light">
       <div className="container text-center">
@@ -20,16 +27,18 @@ export default function Services() {
         <div className="row g-4">
           {services.map((s, i) => (
             <div className="col-6 col-sm-4 col-md-3" key={i}>
-              <div className="service-card h-100">
+              <div
+                className="service-card h-100"
+                role="button"
+                onClick={() => handleServiceClick(s.name)}
+              >
                 <i className={`bi ${s.icon} service-icon`}></i>
                 <h6 className="mt-3">{s.name}</h6>
               </div>
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );
 }
-
