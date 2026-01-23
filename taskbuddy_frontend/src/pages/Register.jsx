@@ -6,18 +6,52 @@ import { useState } from "react";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [role, setRole] = useState("Customer");
+
+  // common fields
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    role: "Customer",
+
+    // provider-only fields
+    serviceCategory: "",
+    experience: "",
+    price: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // 🔹 prepare payload
+    const payload =
+      formData.role === "Service Provider"
+        ? formData
+        : {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            phone: formData.phone,
+            role: formData.role
+          };
+
+    console.log("Submitting:", payload); // backend API later
+
     toast.success("Registration successful!", {
       position: "top-center",
-      autoClose: 1500,
+      autoClose: 1500
     });
 
     setTimeout(() => {
-      if (role === "Service Provider") {
+      if (formData.role === "Service Provider") {
         navigate("/provider-onboarding");
       } else {
         navigate("/login");
@@ -41,38 +75,101 @@ export default function Register() {
         </p>
 
         <form onSubmit={handleSubmit}>
+          {/* Common Fields */}
           <div className="mb-2">
             <label className="form-label small">Full name</label>
-            <input type="text" className="form-control" required />
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              required
+              onChange={handleChange}
+            />
           </div>
 
           <div className="mb-2">
             <label className="form-label small">Email</label>
-            <input type="email" className="form-control" required />
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              required
+              onChange={handleChange}
+            />
           </div>
 
           <div className="mb-2">
             <label className="form-label small">Password</label>
-            <input type="password" className="form-control" required />
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              required
+              onChange={handleChange}
+            />
           </div>
 
           <div className="mb-2">
             <label className="form-label small">Phone</label>
-            <input type="tel" className="form-control" />
+            <input
+              type="tel"
+              name="phone"
+              className="form-control"
+              onChange={handleChange}
+            />
           </div>
 
           {/* Role */}
           <div className="mb-3">
             <label className="form-label small">Role</label>
             <select
+              name="role"
               className="form-select"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
+              value={formData.role}
+              onChange={handleChange}
             >
               <option>Customer</option>
               <option>Service Provider</option>
             </select>
           </div>
+
+          {/* 🔹 Provider-only Fields */}
+          {formData.role === "Service Provider" && (
+            <>
+              <div className="mb-2">
+                <label className="form-label small">Service Category</label>
+                <input
+                  type="text"
+                  name="serviceCategory"
+                  className="form-control"
+                  required
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-2">
+                <label className="form-label small">Experience (years)</label>
+                <input
+                  type="number"
+                  name="experience"
+                  className="form-control"
+                  required
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="mb-2">
+                <label className="form-label small">Price per Service</label>
+                <input
+                  type="number"
+                  name="price"
+                  className="form-control"
+                  required
+                  onChange={handleChange}
+                />
+              </div>
+            </>
+          )}
 
           <div className="form-check mb-3 small">
             <input className="form-check-input" type="checkbox" required />

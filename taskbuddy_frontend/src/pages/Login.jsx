@@ -11,7 +11,7 @@ export default function Login() {
 
     const email = e.target.email.value;
 
-    // Dummy role logic (later replace with backend)
+    // 🔹 Dummy role logic (backend later)
     let role = "customer";
 
     if (email === "admin@taskbuddy.com") {
@@ -21,6 +21,12 @@ export default function Login() {
     } else {
       role = "customer";
     }
+
+    // ✅ ADD THIS (CRITICAL)
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ role })
+    );
 
     toast.success("Login successful!", {
       position: "top-center",
@@ -56,21 +62,21 @@ export default function Login() {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label small">Email</label>
-            <input 
+            <input
               name="email"
-              type="email" 
-              className="form-control" 
-              placeholder="john.doe@example.com" 
+              type="email"
+              className="form-control"
+              placeholder="john.doe@example.com"
               required
             />
           </div>
 
           <div className="mb-3">
             <label className="form-label small">Password</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              placeholder="••••••••" 
+            <input
+              type="password"
+              className="form-control"
+              placeholder="••••••••"
               required
             />
           </div>
@@ -81,7 +87,7 @@ export default function Login() {
 
           <p className="text-center small">
             Don't have an account?{" "}
-            <span 
+            <span
               className="text-primary"
               style={{ cursor: "pointer" }}
               onClick={() => navigate("/register")}

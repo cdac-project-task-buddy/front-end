@@ -2,20 +2,20 @@ import "./Footer.css";
 
 export default function Footer() {
   return (
-    <footer className="footer bg-dark text-light pt-5">
+    <footer id="footer" className="footer bg-dark text-light py-2">
       <div className="container">
         <div className="row text-center text-md-start">
 
           {/* Brand */}
-          <div className="col-12 col-md-3 mb-4">
+          <div className="col-12 col-md-3 mb-2">
             <h5 className="fw-bold">TaskBuddy</h5>
-            <p className="text-muted small">
+            <p className="text-light small opacity-75">
               Reliable home services at your doorstep. We connect you with trusted professionals for all your daily needs.
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="col-6 col-md-3 mb-4">
+          <div className="col-6 col-md-3 mb-2">
             <h6 className="fw-semibold">Quick Links</h6>
             <ul className="list-unstyled footer-links">
               <li>Home</li>
@@ -26,7 +26,7 @@ export default function Footer() {
           </div>
 
           {/* Support */}
-          <div className="col-6 col-md-3 mb-4">
+          <div className="col-6 col-md-3 mb-2">
             <h6 className="fw-semibold">Support</h6>
             <ul className="list-unstyled footer-links">
               <li>Help Center</li>
@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
 
           {/* Contact & Social */}
-          <div className="col-12 col-md-3 mb-4">
+          <div className="col-12 col-md-3 mb-2">
             <h6 className="fw-semibold">Contact</h6>
             <p className="mb-1 small">📧 support@taskbuddy.com</p>
             <p className="small">📞 +91 99999 99999</p>
@@ -53,7 +53,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="text-center border-top pt-3 mt-3 text-muted small">
+        <div id="Bottom" className="text-center border-top pt-2 mt-2 small">
           © {new Date().getFullYear()} TaskBuddy. All rights reserved.
         </div>
       </div>

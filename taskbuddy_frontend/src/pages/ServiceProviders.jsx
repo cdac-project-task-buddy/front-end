@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./ServiceProviders.css";
 
 const providers = [
@@ -33,19 +33,19 @@ const providers = [
 
 export default function ServiceProviders() {
   const { serviceName } = useParams();
+  const navigate = useNavigate();
+  const { id } = useParams(); // provider id (can be dummy)
 
   // URL → service name mapping (home-maintenance → home maintenance)
-  const normalizedService = serviceName.replace("-", " ");
+const normalizedService = serviceName
+  ? serviceName.replace("-", " ")
+  : "";
 
-  const filteredProviders = providers.filter(
-    (p) => p.service === serviceName
-  );
+  const filteredProviders = providers.filter((p) => p.service === serviceName);
 
   return (
     <div className="container py-4">
-      <h4 className="fw-bold text-capitalize">
-        {normalizedService}
-      </h4>
+      <h4 className="fw-bold text-capitalize">{normalizedService}</h4>
       <p className="text-muted">
         Professionals offering {normalizedService} services
       </p>
@@ -78,8 +78,11 @@ export default function ServiceProviders() {
             {/* RIGHT: Action */}
             <div className="provider-action">
               <p className="rate">₹{p.rate}/hr</p>
-              <button className="btn btn-primary btn-sm">
-                Book
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate(`/book-service/${p.id}`)}
+              >
+                Book Service
               </button>
             </div>
           </div>

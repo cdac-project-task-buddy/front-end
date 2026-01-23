@@ -20,7 +20,7 @@ export default function Services() {
   };
 
   return (
-    <section className="py-5 bg-light">
+    <section id="services" className="py-5 bg-light">
       <div className="container text-center">
         <h3 className="fw-bold mb-4">Services We Offer</h3>
 
