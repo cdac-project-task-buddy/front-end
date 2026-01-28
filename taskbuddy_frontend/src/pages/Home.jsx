@@ -5,7 +5,7 @@ import Trust from "../components/Trust";
 
 export default function Home() {
   return (
-    <>
+    <> 
       <Hero />
       <Services />
       <HowItWorks />
