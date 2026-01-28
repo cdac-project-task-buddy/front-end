@@ -8,12 +8,20 @@ export default function BookingSuccess() {
       <h3 className="text-success">✅ Booking Confirmed!</h3>
       <p>Your service has been booked successfully.</p>
 
-      <button
-        className="btn btn-primary mt-3"
-        onClick={() => navigate("/my-bookings")}
-      >
-        View My Bookings
-      </button>
+      <div className="d-flex gap-3 justify-content-center mt-3">
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/my-bookings")}
+        >
+          View My Bookings
+        </button>
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => navigate("/customer-dashboard")}
+        >
+          Go to Dashboard
+        </button>
+      </div>
     </div>
   );
 }

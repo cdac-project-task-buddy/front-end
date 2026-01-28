@@ -1,65 +1,213 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { bookingService } from "../api/bookingService";
+import { toast } from "react-toastify";
 
 export default function BookService() {
-  const { id } = useParams();
+  const { id } = useParams(); // workerId
   const navigate = useNavigate();
+  const location = useLocation();
+  const { serviceId, serviceName } = location.state || {};
 
-  const [booking, setBooking] = useState({
-    date: "",
-    time: "",
-    address: "",
-    notes: ""
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    if (!token || !user.userId) {
+      toast.error('Please login to book a service');
+      navigate('/login');
+      return;
+    }
+
+    if (user.role !== 'ROLE_CUSTOMER') {
+      toast.error('Only customers can book services');
+      navigate('/');
+      return;
+    }
+  }, [navigate]);
+
+  const [formData, setFormData] = useState({
+    workerId: parseInt(id),
+    serviceId: serviceId,
+    bookingDate: "",
+    address: {
+      street: "",
+      area: "",
+      city: "",
+      state: "",
+      pincode: "",
+      country: "India"
+    }
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [minDateTime, setMinDateTime] = useState("");
+
+  useEffect(() => {
+    // Set minimum date to current date and time
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    setMinDateTime(now.toISOString().slice(0, 16));
+  }, []);
 
   const handleChange = (e) => {
-    setBooking({ ...booking, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      address: { ...formData.address, [name]: value }
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Booking Data:", booking, "Provider ID:", id);
-    navigate("/booking-success");
+    setError("");
+    setLoading(true);
+
+    // Validate booking date is not in the past
+    const selectedDate = new Date(formData.bookingDate);
+    const now = new Date();
+    
+    if (selectedDate < now) {
+      const errorMsg = "Cannot book for past dates. Please select a future date and time.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const bookingDateTime = new Date(formData.bookingDate).toISOString();
+      
+      const bookingData = {
+        workerId: formData.workerId,
+        serviceId: formData.serviceId,
+        bookingDate: bookingDateTime,
+        address: formData.address
+      };
+      
+      await bookingService.createBooking(bookingData);
+      toast.success('Booking created successfully!');
+      navigate("/booking-success");
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Failed to create booking";
+      setError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="container mt-4">
-      <h4>Book Service</h4>
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-8">
+          <div className="card shadow">
+            <div className="card-body p-4">
+              <h2 className="mb-4">Book {serviceName} Service</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="date"
-          name="date"
-          className="form-control mb-2"
-          required
-          onChange={handleChange}
-        />
+              {error && <div className="alert alert-danger">{error}</div>}
 
-        <input
-          type="time"
-          name="time"
-          className="form-control mb-2"
-          required
-          onChange={handleChange}
-        />
+              <form onSubmit={handleSubmit}>
+                {/* Booking Date & Time */}
+                <div className="mb-3">
+                  <label className="form-label">Booking Date & Time</label>
+                  <input
+                    type="datetime-local"
+                    name="bookingDate"
+                    className="form-control"
+                    value={formData.bookingDate}
+                    onChange={handleChange}
+                    min={minDateTime}
+                    required
+                  />
+                  <small className="text-muted">Select a future date and time</small>
+                </div>
 
-        <textarea
-          name="address"
-          placeholder="Service Address"
-          className="form-control mb-2"
-          required
-          onChange={handleChange}
-        />
+                {/* Address Section */}
+                <h5 className="mt-4 mb-3">Service Address</h5>
 
-        <textarea
-          name="notes"
-          placeholder="Additional notes (optional)"
-          className="form-control mb-3"
-          onChange={handleChange}
-        />
+                <div className="mb-3">
+                  <label className="form-label">Street</label>
+                  <input
+                    type="text"
+                    name="street"
+                    className="form-control"
+                    value={formData.address.street}
+                    onChange={handleAddressChange}
+                    placeholder="House/Flat No., Building Name"
+                    required
+                  />
+                </div>
 
-        <button className="btn btn-success">Confirm Booking</button>
-      </form>
+                <div className="mb-3">
+                  <label className="form-label">Area/Locality</label>
+                  <input
+                    type="text"
+                    name="area"
+                    className="form-control"
+                    value={formData.address.area}
+                    onChange={handleAddressChange}
+                    placeholder="Area, Locality"
+                  />
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">City</label>
+                    <input
+                      type="text"
+                      name="city"
+                      className="form-control"
+                      value={formData.address.city}
+                      onChange={handleAddressChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">State</label>
+                    <input
+                      type="text"
+                      name="state"
+                      className="form-control"
+                      value={formData.address.state}
+                      onChange={handleAddressChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Pincode</label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    className="form-control"
+                    value={formData.address.pincode}
+                    onChange={handleAddressChange}
+                    pattern="[0-9]{6}"
+                    maxLength="6"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn btn-success w-100"
+                  disabled={loading}
+                >
+                  {loading ? "Booking..." : "Confirm Booking"}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

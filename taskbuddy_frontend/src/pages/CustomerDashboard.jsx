@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "./CustomerDashboard.css";
 import Services from "../components/Services";
+import { bookingService } from "../api/bookingService";
+import Loading from "../components/Loading";
 
 import sofaCleaning from "../assets/sofaCleaning.jpg";
 import kitchenCleaning from "../assets/vacuum-cleaner-tackling-heavily-soiled-floor.jpg";
@@ -8,26 +11,48 @@ import bathroomCleaning from "../assets/sofaCleaning.jpg";
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
-
-  // ✅ Logged-in user (from login)
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const stats = {
-    totalBookings: 158,
-    pending: 12,
-    completed: 144,
-    spending: 5200,
-  };
+  const [stats, setStats] = useState({
+    totalBookings: 0,
+    pending: 0,
+    completed: 0,
+    spending: 0,
+  });
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const bookings = [
-    { service: "House Cleaning", status: "Completed" },
-    { service: "Plumbing Fix", status: "Pending" },
-    { service: "Washing Machine Repair", status: "Completed" },
-    { service: "Hair Cut", status: "Cancelled" },
-  ];
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      const data = await bookingService.getMyBookings();
+      setBookings(data.slice(0, 4));
+      
+      const total = data.length;
+      const pending = data.filter(b => b.status === "PENDING").length;
+      const completed = data.filter(b => b.status === "COMPLETED").length;
+      const spending = data.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+      
+      setStats({ totalBookings: total, pending, completed, spending });
+    } catch (err) {
+      console.error("Failed to fetch bookings", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="dashboard container">
+
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
 
       {/* 🔹 TOP HEADER (PROFILE ACCESS) */}
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -52,8 +77,19 @@ const CustomerDashboard = () => {
       <h4 className="mb-3">What are you looking for today?</h4>
 
       <div className="dashboard-search mb-4">
-        <input type="text" placeholder="Search services..." />
-        <button>Search</button>
+        <input 
+          type="text" 
+          placeholder="Search services..." 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && searchQuery && navigate(`/services?search=${searchQuery}`)}
+        />
+        <button 
+          onClick={() => searchQuery && navigate(`/services?search=${searchQuery}`)}
+          disabled={!searchQuery}
+        >
+          Search
+        </button>
       </div>
 
       <div className="row">
@@ -90,9 +126,7 @@ const CustomerDashboard = () => {
           </div>
 
           {/* 🔹 SERVICES */}
-          <section className="dashboard-services-section">
-            <Services />
-          </section>
+          <Services />
         </div>
 
         {/* RIGHT SECTION */}
@@ -110,14 +144,18 @@ const CustomerDashboard = () => {
           {/* 🔹 RECENT BOOKINGS */}
           <div className="dashboard-card">
             <h6>Recent Bookings</h6>
-            {bookings.map((b, i) => (
-              <div className="booking-row" key={i}>
-                <span>{b.service}</span>
-                <span className={`status ${b.status.toLowerCase()}`}>
-                  {b.status}
-                </span>
-              </div>
-            ))}
+            {bookings.length > 0 ? (
+              bookings.map((b, i) => (
+                <div className="booking-row" key={i}>
+                  <span>{b.serviceName || "Service"}</span>
+                  <span className={`status ${b.status.toLowerCase()}`}>
+                    {b.status}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p className="text-muted">No bookings yet</p>
+            )}
 
             <button
               className="btn btn-link p-0 mt-2"
@@ -129,8 +167,11 @@ const CustomerDashboard = () => {
 
         </div>
       </div>
+      </>
+      )}
     </div>
   );
+  
 };
 
 export default CustomerDashboard;
