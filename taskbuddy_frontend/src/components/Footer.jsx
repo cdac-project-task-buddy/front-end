@@ -2,7 +2,7 @@ import "./Footer.css";
 
 export default function Footer() {
   return (
-    <footer id="footer" className="footer bg-dark text-light py-2">
+    <footer id="footer" className="footer bg-dark text-light py-2 mt-4">
       <div className="container">
         <div className="row text-center text-md-start">
 

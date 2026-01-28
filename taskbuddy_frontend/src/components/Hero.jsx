@@ -1,15 +1,17 @@
+import { useNavigate } from "react-router-dom";
 import hero1 from "../assets/hero1.jpg";
 import hero2 from "../assets/hero2.jpg";
 import hero3 from "../assets/hero3.jpg";
 import "./Hero.css";
 
 export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="hero-section d-flex align-items-center">
       <div className="container">
         <div className="row align-items-center text-center text-md-start">
           
-          {/* Left Text */}
           <div className="col-md-6">
             <h1 className="fw-bold display-5">
               All Home Services, <br /> One Trusted Buddy
@@ -20,16 +22,22 @@ export default function Hero() {
             </p>
 
             <div className="d-flex flex-column flex-sm-row gap-3 mt-4 justify-content-center justify-content-md-start">
-              <button className="btn btn-primary px-4">
+              <button 
+                className="btn btn-primary px-4"
+                onClick={() => navigate("/services")}
+              >
                 Explore Services
               </button>
-              <button className="btn btn-outline-primary px-4">
+
+              <button 
+                className="btn btn-outline-primary px-4"
+                onClick={() => navigate("/login")}
+              >
                 Login / Register
               </button>
             </div>
           </div>
 
-          {/* Right Slider */}
           <div className="col-md-6 mt-4 mt-md-0">
             <div id="heroCarousel" className="carousel slide" data-bs-ride="carousel">
               
@@ -45,7 +53,6 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Controls */}
               <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
                 <span className="carousel-control-prev-icon"></span>
               </button>
