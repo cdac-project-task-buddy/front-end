@@ -1,28 +1,41 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Navbar.css";
+import { authService } from "../api/authService";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    setUser(storedUser);
+    const syncUser = () => {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    };
+
+    syncUser();
+    window.addEventListener("storage", syncUser);
+    window.addEventListener("userLogin", syncUser);
+
+    return () => {
+      window.removeEventListener("storage", syncUser);
+      window.removeEventListener("userLogin", syncUser);
+    };
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    authService.logout();
+    localStorage.clear();
     setUser(null);
-    navigate("/");
+    navigate("/login");
   };
 
   const goToDashboard = () => {
-    if (user?.role === "provider") {
+    if (user?.role === "ROLE_WORKER") {
       navigate("/provider-dashboard");
-    } else if (user?.role === "admin") {
+    } else if (user?.role === "ROLE_ADMIN") {
       navigate("/admin-dashboard");
-    } else {
+    } else if (user?.role === "ROLE_CUSTOMER") {
       navigate("/customer-dashboard");
     }
   };
@@ -36,8 +49,17 @@ export default function Navbar() {
 
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/services">Services</Link></li>
+            {!user && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/">Home</Link>
+                </li>
+                
+                <li className="nav-item">
+                  <Link className="nav-link" to="/services">Services</Link>
+                </li>
+              </>
+            )}
           </ul>
 
           <div className="d-flex gap-2 ms-3">
