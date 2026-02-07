@@ -1,0 +1,22 @@
+.hero-section {
+  min-height: 90vh;
+  background: #f8f9fa;
+}
+
+.hero-img {
+  max-height: 400px;
+  object-fit: cover;
+}
+.hero-section {
+  background: linear-gradient(to right, #f8f9fa, #eaf1ff);
+}
+.hero-section {
+  min-height: 90vh;
+  background: #f8f9fa;
+}
+
+.hero-slider img {
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+}
